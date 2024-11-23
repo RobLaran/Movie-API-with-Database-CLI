@@ -43,6 +43,16 @@ public class DatabaseConnectivity {
         }
     }
 
+    public static void insertUser(String name, String password) {
+        query = "insert into user (username, password) values ('"+name+"', '"+password+"');";
+
+        try {
+            statement.executeUpdate(query);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public void fetchMovies() {
 
     }

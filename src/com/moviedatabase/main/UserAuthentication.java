@@ -7,7 +7,7 @@ import java.util.Scanner;
 public class UserAuthentication {
     private Scanner scan = new Scanner(System.in);
 
-    public void loginUser() {
+    public boolean loginUser() {
         boolean isLoggedIn = false;
 
         while(!isLoggedIn) {
@@ -25,9 +25,11 @@ public class UserAuthentication {
             }
         }
 
+        return isLoggedIn;
+
     }
 
-    public void registerUser() {
+    public boolean registerUser() {
         boolean isRegistered = false;
 
         while(!isRegistered) {
@@ -42,6 +44,7 @@ public class UserAuthentication {
             if(!DatabaseConnectivity.isUserRegistered(name)) {
                 if(password.equals(reTypePassword)) {
                     isRegistered = true;
+                    DatabaseConnectivity.insertUser(name, password);
                     System.out.println("User registered");
                 } else {
                     System.out.println("Password mismatched");
@@ -51,5 +54,7 @@ public class UserAuthentication {
             }
 
         }
+
+        return isRegistered;
     }
 }
