@@ -1,40 +1,55 @@
 package com.moviedatabase.api;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.moviedatabase.main.Movie;
 
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 public class MovieAPI {
     private static final String header = "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI2OTNjZTc1Y2I4MTJjYzY1NTJmN2YwNTAxZWIyYzRkYyIsIm5iZiI6MTczMjA3MjQ4Ni43MTE0Njc3LCJzdWIiOiI2NzM5ZjNmMDYyNGE4NWI4ODk5ZWQzODMiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.YlL1L51iVV5GSbHeu3TAi_ZQXaBOZRTf00-81fSZAGU";
 
-    private final HttpClient client = HttpClient.newHttpClient();
+    private static final HttpClient client = HttpClient.newHttpClient();
     private static HttpRequest request;
     private static HttpResponse<String> response;
 
-    public static void loadMovieDetail(int movieID) {
-
-                request = HttpRequest.newBuilder()
-                .uri(URI.create("https://api.themoviedb.org/3/movie/"+movieID+"?language=en-US"))
+    public static Movie getMovie(String movieTitle) {
+        request = HttpRequest.newBuilder()
+                .uri(URI.create("https://api.themoviedb.org/3/search/movie?query="+removeSpaces(movieTitle)+"&include_adult=false&language=en-US&page=1"))
                 .header("accept", "application/json")
                 .header("Authorization", "Bearer " + header)
                 .method("GET", HttpRequest.BodyPublishers.noBody())
                 .build();
 
         try {
-            response = HttpClient.newHttpClient()
-                    .send(request, HttpResponse.BodyHandlers.ofString());
+            response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+            ObjectMapper mapper = new ObjectMapper();
+
+            JsonNode movies = mapper.readTree(response.body()).get("results");
+
+            return mapper.readValue(movies.get(0).toPrettyString(), Movie.class);
+        } catch (IOException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void loadMovieDetail(int movieID) {
+        request = HttpRequest.newBuilder()
+        .uri(URI.create("https://api.themoviedb.org/3/movie/"+movieID+"?language=en-US"))
+        .header("accept", "application/json")
+        .header("Authorization", "Bearer " + header)
+        .method("GET", HttpRequest.BodyPublishers.noBody())
+        .build();
+
+        try {
+            response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
             ObjectMapper mapper = new ObjectMapper();
 
@@ -68,8 +83,7 @@ public class MovieAPI {
                 .build();
 
         try {
-            response = HttpClient.newHttpClient()
-                    .send(request, HttpResponse.BodyHandlers.ofString());
+            response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
             ObjectMapper mapper = new ObjectMapper();
 

@@ -6,6 +6,7 @@ import java.util.Scanner;
 
 public class UserAuthentication {
     private Scanner scan = new Scanner(System.in);
+    private User user;
 
     public boolean loginUser() {
         boolean isLoggedIn = false;
@@ -20,13 +21,20 @@ public class UserAuthentication {
             if(DatabaseConnectivity.isUserLoggedIn(name, password)) {
                 isLoggedIn = true;
                 System.out.println("Logged in");
+
+                int id = DatabaseConnectivity.getUserID(name, password);
+
+                user = new User(id, name);
             } else {
                 System.out.println("User not found");
             }
         }
 
         return isLoggedIn;
+    }
 
+    public User getUser() {
+        return this.user;
     }
 
     public boolean registerUser() {

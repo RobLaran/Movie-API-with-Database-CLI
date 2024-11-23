@@ -1,6 +1,13 @@
 package com.moviedatabase.jdbc;
 
+import com.moviedatabase.api.MovieAPI;
+import com.moviedatabase.main.Movie;
+
+import java.net.URI;
+import java.net.http.HttpRequest;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DatabaseConnectivity {
     private final static String username = "root";
@@ -34,7 +41,7 @@ public class DatabaseConnectivity {
     }
 
     public static boolean isUserRegistered(String name) {
-        query = "select username from user where username = '"+name+"'";
+        query = "select username from user where username = '"+name+"';";
 
         try {
             return statement.executeQuery(query).next();
@@ -53,16 +60,49 @@ public class DatabaseConnectivity {
         }
     }
 
-    public void fetchMovies() {
+    public static int getUserID(String name, String password) {
+        query = "select user_id from user where username = '"+name+"' and password = '"+password+"';";
 
+        try {
+            ResultSet result = statement.executeQuery(query);
+
+            if(result.next()) {
+                return result.getInt(1);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return - 1;
     }
 
-    public void fetchMovieDetail() {
+    public static List<Movie> fetchFavoriteMovies(int userID) {
+        List<Movie> favoriteMovies = new ArrayList<>();
 
+        query = "select * from favorite_movies where user_id = "+userID+";";
+
+        try {
+            ResultSet results = statement.executeQuery(query);
+
+            while(results.next()) {
+                favoriteMovies.add(MovieAPI.getMovie(results.getString("movie_title")));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return favoriteMovies;
     }
 
-    public void fetchGenres() {
+    public static void insertMovie(int userID, int movieID, String movieTitle) {
+        query = "insert into favorite_movies (movie_id, movie_title, user_id) values ("+movieID+", '"+movieTitle+"', "+userID+");";
 
+        try {
+            statement.executeUpdate(query);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
+
 
 }

@@ -18,12 +18,11 @@ public class Main {
     public static void main(String[] args) {
         Main cli = new Main();
 
-        cli.mainInterface();
+        cli.runInterface();
     }
 
     public void runInterface() {
         DatabaseConnectivity.connectDatabase();
-
         boolean running = true;
 
         while(running) {
@@ -38,7 +37,7 @@ public class Main {
                 switch(input) {
                     case 1:
                         if(authentication.loginUser()) {
-                            running = false;
+                            user = authentication.getUser();
                             mainInterface();
                         }
                         break;
@@ -64,46 +63,63 @@ public class Main {
     }
 
     public void mainInterface() {
-        System.out.println("(1) Search Movies");
-        System.out.println("(2) Movie Detail");
-        System.out.println("(3) Favorite Movies");
-        System.out.println("(4) Log out");
-        System.out.print("Enter a number (1-4): ");
-        int input = scan.nextInt();
+        while(true) {
+            System.out.println("Hello " + user.getName());
+            System.out.println("(1) Search Movies");
+            System.out.println("(2) Movie Detail");
+            System.out.println("(3) Add to Favorite Movies");
+            System.out.println("(4) Favorite Movies");
+            System.out.println("(0) Log out");
+            System.out.print("Enter a number (1-4): ");
+            int input = scan.nextInt();
 
-        switch (input) {
-            case 1:
-                System.out.print("\nSearch Movie: ");
-                String title = scan.next();
-                searchMovie(title);
-                break;
-            case 2:
-                System.out.print("\nEnter Movie: ");
-                String movieTitle = scan.next();
+            switch (input) {
+                case 0:
+                    return;
+                case 1:
+                    System.out.print("\nSearch Movie: ");
+                    String title = scan.next();
+                    searchMovie(title);
+                    break;
+                case 2:
+                    System.out.println("\n(You can just copy from the results)");
+                    System.out.print("Enter Movie: ");
+                    String movieTitle = scan.next();
 
-                for(Movie movie : movies) {
-                    if(movie.getTitle().equals(movieTitle)) {
-                        movieDetail(movie.getId());
-                        break;
+                    for(Movie movie : movies) {
+                        if(movie.getTitle().equals(movieTitle)) {
+                            movieDetail(movie.getId());
+                            break;
+                        }
                     }
-                }
 
-                System.out.println();
-                break;
-            case 3:
+                    System.out.println();
+                    break;
+                case 3:
+                    System.out.println("\n(You can just copy from the results)");
+                    System.out.print("Enter Movie: ");
+                    String movieToAdd = scan.next();
 
-                break;
+                    for(Movie movie : movies) {
+                        if(movie.getTitle().equals(movieToAdd)) {
+                            DatabaseConnectivity.insertMovie(user.getID(), movie.getId(), movie.getTitle());
+                            System.out.println("Added to Favorite Movies\n");
+                            break;
+                        }
+                    }
+                    break;
+                case 4:
+                    System.out.print("\nYour Favorite Movies: \n");
+                    user.fetchFavoriteMovies(DatabaseConnectivity.fetchFavoriteMovies(user.getID()));
+                    user.showFavoriteMovies();
+                    break;
 
-            case 4:
+                default:
+                    System.out.println("Select a correct number!");
+                    break;
+            }
 
-                break;
-
-            default:
-                System.out.println("Select a correct number!");
-                break;
         }
-        System.out.println(movies);
-        mainInterface();
     }
 
      public void searchMovie(String title) {

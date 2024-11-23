@@ -1,5 +1,7 @@
 package com.moviedatabase.main;
 
+import com.moviedatabase.api.MovieAPI;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,17 +37,20 @@ public class User {
     }
 
     public void showFavoriteMovies() {
-        for(int i = 0; i < favoriteMovies.size(); i++) {
-            Movie movie = favoriteMovies.get(i);
-            System.out.println("Movie " + (i + 1));
-            System.out.println("Title: ");
-            System.out.println("Overview: ");
-            System.out.println("Popularity: ");
-            System.out.println("Release Date: ");
-            System.out.println("Vote Average: ");
-            System.out.println("Vote Counts: ");
-            System.out.println();
+        if(favoriteMovies.isEmpty()) {
+            System.out.println("No added movies");
+        } else {
+            for(int i = 0; i < favoriteMovies.size(); i++) {
+                Movie movie = favoriteMovies.get(i);
+                System.out.println("Movie " + (i + 1));
+                MovieAPI.loadMovieDetail(movie.getId());
+                System.out.println();
+            }
         }
+    }
+
+    public void fetchFavoriteMovies(List<Movie> movies) {
+        this.favoriteMovies = movies;
     }
 
 }
