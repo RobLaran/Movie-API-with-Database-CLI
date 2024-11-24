@@ -65,10 +65,11 @@ public class Main {
     public void mainInterface() {
         while(true) {
             System.out.println("Hello " + user.getName());
-            System.out.println("(1) Search Movies");
-            System.out.println("(2) Movie Detail");
-            System.out.println("(3) Add to Favorite Movies");
-            System.out.println("(4) Favorite Movies");
+            System.out.println("(1) Search Movies by title");
+            System.out.println("(2) Popular Movies");
+            System.out.println("(3) Movie Detail");
+            System.out.println("(4) Add to Favorite Movies");
+            System.out.println("(5) Favorite Movies");
             System.out.println("(0) Log out");
             System.out.print("Enter a number (1-4): ");
             int input = scan.nextInt();
@@ -82,6 +83,11 @@ public class Main {
                     searchMovie(title);
                     break;
                 case 2:
+                    System.out.println("Popular Movies: ");
+                    showPopularMovies();
+                    break;
+
+                case 3:
                     System.out.println("\n(You can just copy from the results)");
                     System.out.print("Enter Movie: ");
                     String movieTitle = scan.next();
@@ -93,9 +99,10 @@ public class Main {
                         }
                     }
 
+                    System.out.println("The movie must be in the recent list");
                     System.out.println();
                     break;
-                case 3:
+                case 4:
                     System.out.println("\n(You can just copy from the results)");
                     System.out.print("Enter Movie: ");
                     String movieToAdd = scan.next();
@@ -108,7 +115,7 @@ public class Main {
                         }
                     }
                     break;
-                case 4:
+                case 5:
                     System.out.print("\nYour Favorite Movies: \n");
                     user.fetchFavoriteMovies(DatabaseConnectivity.fetchFavoriteMovies(user.getID()));
                     user.showFavoriteMovies();
@@ -127,6 +134,15 @@ public class Main {
          movies.forEach(movie -> {
              System.out.println("Movie Title: " + movie.getTitle());
          });
+
+         System.out.println();
+     }
+
+     public void  showPopularMovies() {
+         movies = MovieAPI.fetchPopularMovies();
+         movies.forEach(movie -> {
+            System.out.println("Movie Title: " + movie.getTitle());
+        });
 
          System.out.println();
      }

@@ -101,6 +101,33 @@ public class MovieAPI {
         }
     }
 
+    public static List<Movie> fetchPopularMovies() {
+        request = HttpRequest.newBuilder()
+                .uri(URI.create("https://api.themoviedb.org/3/movie/popular?language=en-US&page=1"))
+                .header("accept", "application/json")
+                .header("Authorization", "Bearer " + header)
+                .method("GET", HttpRequest.BodyPublishers.noBody())
+                .build();
+
+        try {
+            response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+            ObjectMapper mapper = new ObjectMapper();
+
+            JsonNode movies = mapper.readTree(response.body()).get("results");
+
+            List<Movie> popularMovies = new ArrayList<>();
+
+            for(JsonNode movieObj : movies) {
+                popularMovies.add(mapper.readValue(movieObj.toPrettyString(), Movie.class));
+            }
+
+            return popularMovies;
+        } catch (IOException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private static String prettyPrint(String jsonString) {
         try {
             ObjectMapper mapper = new ObjectMapper();
